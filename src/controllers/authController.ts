@@ -1,58 +1,61 @@
 
 import { NextFunction, Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 import User from '../models/User';
+
+const secretKey = process.env.SECRET_KEY || 'secretkey';
+
+if (!secretKey) {
+    throw new Error('Secret key not found in environment variables');
+}
+
 export const login = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { username, password } = req.body;
-        const user = await User.findOne({ name: username });
-        console.log('req', req.body)
-        const token = 'token';
-        res.json({ token, body: req.body, user })
+        const user = await User.findOne({ username });
+
+        if (!user || !await user.validatePassword(password)) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+
+        const token = jwt.sign({ id: user._id, username: user.username }, secretKey);
+        res.json({ token });
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const signup = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { username, password } = req.body;
+        const existingUser = await User.findOne({ username });
+        if (existingUser) {
+            return res.status(400).json({ message: 'Username already exists' });
+        }
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new User({ username, password: hashedPassword });
+        await newUser.save();
+        const token = jwt.sign({ id: newUser._id, username: newUser.username }, secretKey)
+        res.json({ message: 'Signup successful', token });
+
     } catch (error) {
         next(error)
     }
 }
 
-
-
-
-// // backend/controllers/authController.ts
-
-// import { Request, Response, NextFunction } from 'express';
-// import jwt from 'jsonwebtoken';
-// import { secretKey } from '../config';
-// import User from '../models/User';
-
-// export const login = async (req: Request, res: Response, next: NextFunction) => {
-//   try {
-//     const { username, password } = req.body;
-//     const user = await User.findOne({ username });
-
-//     if (!user || !user.validatePassword(password)) {
-//       return res.status(401).json({ message: 'Invalid credentials' });
-//     }
-
-//     const token = jwt.sign({ id: user._id, username: user.username }, secretKey);
-//     res.json({ token });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
-// export const signup = async (req: Request, res: Response, next: NextFunction) => {
-//   try {
-//     const { username, password } = req.body;
-//     const existingUser = await User.findOne({ username });
-
-//     if (existingUser) {
-//       return res.status(400).json({ message: 'Username already exists' });
-//     }
-
-//     const newUser = new User({ username, password });
-//     await newUser.save();
-
-//     res.json({ message: 'Signup successful' });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+export const changePassword = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { username, oldPassword, newPassword } = req.body;
+        const user = await User.findOne({ username });
+        if (!user || !await user.validatePassword(oldPassword)) {
+            return res.status(401).json({ message: 'Invalid old password' });
+        }
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedNewPassword;
+        await user.save();
+        res.json({ message: 'Password changed successfully' });
+    } catch (error) {
+        next(error)
+    }
+};

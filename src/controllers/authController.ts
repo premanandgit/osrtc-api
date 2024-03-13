@@ -2,9 +2,10 @@
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import User from '../models/User';
+import User, { UserRole } from '../models/User';
 
 const secretKey = process.env.SECRET_KEY || 'secretkey';
+const superAdminCode  = process.env.SUPER_ADMIN_CODE || 'superadmincode';
 
 if (!secretKey) {
     throw new Error('Secret key not found in environment variables');
@@ -28,13 +29,14 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
 
 export const signup = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { username, password } = req.body;
+        const { username, password, specialCode } = req.body;
         const existingUser = await User.findOne({ username });
         if (existingUser) {
             return res.status(400).json({ message: 'Username already exists' });
         }
+        let role = specialCode === superAdminCode ? UserRole.SuperAdmin :  UserRole.User;
         const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new User({ username, password: hashedPassword });
+        const newUser = new User({ username, password: hashedPassword, role });
         await newUser.save();
         const token = jwt.sign({ id: newUser._id, username: newUser.username }, secretKey)
         res.json({ message: 'Signup successful', token });

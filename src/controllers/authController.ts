@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 import User, { UserRole } from '../models/User';
 
 const secretKey = process.env.SECRET_KEY || 'secretkey';
-const superAdminCode  = process.env.SUPER_ADMIN_CODE || 'superadmincode';
+const superAdminCode = process.env.SUPER_ADMIN_CODE || 'superadmincode';
 
 if (!secretKey) {
     throw new Error('Secret key not found in environment variables');
@@ -34,7 +34,7 @@ export const signup = async (req: Request, res: Response, next: NextFunction) =>
         if (existingUser) {
             return res.status(400).json({ message: 'Username already exists' });
         }
-        let role = specialCode === superAdminCode ? UserRole.SuperAdmin :  UserRole.User;
+        let role = specialCode === superAdminCode ? UserRole.SuperAdmin : UserRole.User;
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new User({ username, password: hashedPassword, role });
         await newUser.save();
@@ -57,6 +57,14 @@ export const changePassword = async (req: Request, res: Response, next: NextFunc
         user.password = hashedNewPassword;
         await user.save();
         res.json({ message: 'Password changed successfully' });
+    } catch (error) {
+        next(error)
+    }
+};
+
+export const changeUserRole = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        res.json({ message: 'Role changed successfully', token: res.locals.userToken });
     } catch (error) {
         next(error)
     }

@@ -7,7 +7,6 @@ export const logRequest = (req: Request, res: Response, next: NextFunction) => {
         headers: req.headers,
         body: req.body,
         ip: req.ip,
-        trace: req.traceId,
-    });
-    next();
+    }, req.traceId);
+        next();
 }

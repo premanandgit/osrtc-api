@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import User, { UserRole } from '../models/User';
+import logger from '../utils/logger';
 
 const secretKey = process.env.SECRET_KEY || 'secretkey';
 const superAdminCode = process.env.SUPER_ADMIN_CODE || 'superadmincode';
@@ -17,6 +18,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         const user = await User.findOne({ username });
 
         if (!user || !await user.validatePassword(password)) {
+            logger.info(`${req.traceId} - 401 - Invalid credentials`)
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 

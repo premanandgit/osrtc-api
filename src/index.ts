@@ -3,12 +3,17 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import authRoutes from './routes/authRoutes';
 import { errorHandler } from './middleware/errorHandler';
+import { logRequest } from './middleware/logRequest';
+import { createTraceId } from './middleware/createTraceId';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors<Request>());
 app.use(express.json());
+
+app.use(createTraceId);
+app.use(logRequest);
 
 app.use('/api/auth', authRoutes);
 

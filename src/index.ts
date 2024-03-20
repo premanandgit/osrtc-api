@@ -2,6 +2,7 @@ import express, { Request } from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import authRoutes from './routes/authRoutes';
+import userRoutes from './routes/userRoutes';
 import { errorHandler } from './middleware/errorHandler';
 import { logRequest } from './middleware/logRequest';
 import { createTraceId } from './middleware/createTraceId';
@@ -16,6 +17,7 @@ app.use(createTraceId);
 app.use(logRequest);
 
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 
 app.use(errorHandler);
 

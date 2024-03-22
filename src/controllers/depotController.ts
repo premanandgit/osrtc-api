@@ -25,6 +25,34 @@ export const getDepot = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
+export const addDepot = async (req: Request, res: Response): Promise<void> => {
+    try {
+      // Extract depot data from request body
+      const { name, location } = req.body;
+  
+      // Validate request data
+      if (!name || !location) {
+        res.status(400).json({ error: 'Name and location are required' });
+        return;
+      }
+  
+      // Create a new depot instance
+      const newDepot: DepotDocument = new Depot({
+        name,
+        location,
+      });
+  
+      // Save the depot to the database
+      await newDepot.save();
+  
+      // Send success response
+      res.status(201).json({ message: 'Depot added successfully', depot: newDepot });
+    } catch (error) {
+      console.error('Error adding depot:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  };
+
 // Update depot details
 export const updateDepot = async (req: Request, res: Response): Promise<void> => {
     try {

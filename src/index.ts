@@ -4,6 +4,7 @@ import cors from 'cors';
 import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoutes';
 import depotRoutes from './routes/depotRoutes';
+import busRoutes from './routes/busRoutes';
 import { errorHandler } from './middleware/errorHandler';
 import { logRequest } from './middleware/logRequest';
 import { createTraceId } from './middleware/createTraceId';
@@ -20,6 +21,7 @@ app.use(logRequest);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/depots', depotRoutes);
+app.use('/api/buses', busRoutes);
 
 app.use(errorHandler);
 

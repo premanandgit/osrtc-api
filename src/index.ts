@@ -8,8 +8,11 @@ import busRoutes from './routes/busRoutes';
 import { errorHandler } from './middleware/errorHandler';
 import { logRequest } from './middleware/logRequest';
 import { createTraceId } from './middleware/createTraceId';
+import { createServer } from 'http';
+import { initWebSocket } from './services/socketModule'; 
 
 const app = express();
+const server = createServer(app);
 const PORT = process.env.PORT || 3000;
 
 app.use(cors<Request>());
@@ -25,10 +28,11 @@ app.use('/api/buses', busRoutes);
 
 app.use(errorHandler);
 
+initWebSocket(server);
 mongoose.connect('mongodb://localhost:27017/test')
     .then(() => {
         console.log('Connected to MongoDB');
-        app.listen(PORT, () => {
+        server.listen(PORT, () => {
             console.log(`Server is running on port ${PORT}`);
         });
     })

@@ -30,3 +30,9 @@ export class AuthorizationError extends CustomError {
         super(message, 403);
     }
 }
+
+export class DBConnectionFailure extends CustomError {
+    constructor(message: string) {
+        super(message, 500);
+    }
+}

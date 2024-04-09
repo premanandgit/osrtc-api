@@ -1,79 +1,43 @@
-import mqtt, { MqttClient } from 'mqtt';
+import * as mqtt from 'mqtt';
 
-export function startMqttService() {
-    const client: MqttClient = mqtt.connect('mqtt://test.mosquitto.org');
+const MQTT_BROKER_URL = 'mqtt://test.mosquitto.org'; // Change this to your MQTT broker URL
+const TOPIC_TO_SERVER = 'topic/fromClientToServer';
+const TOPIC_TO_CLIENT = 'topic/fromServerToClient';
 
-    client.on('connect', () => {
-        client.subscribe('presence', (err) => {
-            if (!err) {
-                client.publish('presence', 'Hello');
-            }
-        });
+export const startMqttServer = () => {
+  const client = mqtt.connect(MQTT_BROKER_URL);
+
+  client.on('connect', () => {
+    console.log('MQTT Client connected');
+
+    client.subscribe(TOPIC_TO_SERVER, (err) => {
+      if (!err) {
+        console.log('Subscribed to topic:', TOPIC_TO_SERVER);
+      } else {
+        console.error('Error subscribing to topic:', err);
+      }
     });
+  });
 
-    client.on('message', (topic: string, message: Buffer) => {
-        // message is Buffer
-        console.log("message ", message.toString());
-        client.end();
-    });
-}
+  client.on('message', (topic, message) => {
+    console.log('Received message from topic:', topic.toString());
 
-// import mqtt, { IClientOptions, MqttClient } from 'mqtt';
+    if (topic === TOPIC_TO_SERVER) {
+      const parsedMessage = JSON.parse(message.toString());
+      console.log('Message from client:', parsedMessage);
+      // Process the message from the client as needed
+      // Example: Prepare a response message
+      const responsePayload = { response: 'Acknowledged', data: parsedMessage };
+      // Send the response back to the client
+      client.publish(TOPIC_TO_CLIENT, JSON.stringify(responsePayload));
+    }
+  });
 
-// class MQTTModule {
-//   private client: MqttClient;
+  const sendMessageToClient = (payload: any) => {
+    client.publish(TOPIC_TO_CLIENT, JSON.stringify(payload));
+  };
 
-//   constructor(private brokerUrl: string, private options: IClientOptions = {}) {
-//     this.client = mqtt.connect(brokerUrl, options);
-
-//     this.client.on('connect', () => {
-//       console.log('Connected to MQTT broker');
-//     });
-//     this.client.on('error', (err) => {
-//       console.error('MQTT error:', err);
-//     });
-
-//     this.client.on('message', (topic, message) => {
-//       console.log(`Received message on topic ${topic}: ${message.toString()}`);
-//       // Process incoming message here
-//     });
-//   }
-
-//   subscribe(topic: string): void {
-//     this.client.subscribe(topic, (err) => {
-//       if (err) {
-//         console.error('Subscribe error:', err);
-//       } else {
-//         console.log(`Subscribed to topic ${topic}`);
-//       }
-//     });
-//   }
-
-//   publish(topic: string, message: string): void {
-//     this.client.publish(topic, message, (err) => {
-//       if (err) {
-//         console.error('Publish error:', err);
-//       } else {
-//         console.log(`Published message "${message}" to topic ${topic}`);
-//       }
-//     });
-//   }
-
-//   unsubscribe(topic: string): void {
-//     this.client.unsubscribe(topic, (err) => {
-//       if (err) {
-//         console.error('Unsubscribe error:', err);
-//       } else {
-//         console.log(`Unsubscribed from topic ${topic}`);
-//       }
-//     });
-//   }
-
-//   end(): void {
-//     this.client.end();
-//     console.log('Disconnected from MQTT broker');
-//   }
-// }
-
-// export default MQTTModule;
-
+  return {
+    sendMessageToClient,
+  };
+};

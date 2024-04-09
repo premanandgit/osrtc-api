@@ -12,14 +12,14 @@ import { checkDBConnection } from './middleware/checkDBConnection';
 import { createServer } from 'http';
 import { initWebSocket } from './services/socketModule';
 import connectToMongoDB from './services/db';
-import { startMqttService } from './services/mqttServer';
+import { startMqttServer } from './services/mqttServer';
 
 import { tcpServer, tcpClients } from './services/tcpServer';
 
 // Example: Access tcpClients map
 console.log('Current TCP clients:');
 for (const clientId of tcpClients.keys()) {
-  console.log(`Client ID: ${clientId}`);
+    console.log(`Client ID: ${clientId}`);
 }
 
 
@@ -58,4 +58,8 @@ connectToMongoDB()
         });
     });
 
-startMqttService();
+const { sendMessageToClient } = startMqttServer();
+setTimeout(() => {
+    console.log("Sending data...")
+    sendMessageToClient({ data: "hi client" })
+}, 5000)

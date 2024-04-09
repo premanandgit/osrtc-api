@@ -12,6 +12,16 @@ import { checkDBConnection } from './middleware/checkDBConnection';
 import { createServer } from 'http';
 import { initWebSocket } from './services/socketModule';
 import connectToMongoDB from './services/db';
+import { startMqttService } from './services/mqttServer';
+
+import { tcpServer, tcpClients } from './services/tcpServer';
+
+// Example: Access tcpClients map
+console.log('Current TCP clients:');
+for (const clientId of tcpClients.keys()) {
+  console.log(`Client ID: ${clientId}`);
+}
+
 
 const app = express();
 const server = createServer(app);
@@ -47,3 +57,5 @@ connectToMongoDB()
             console.log(`Server is running on port ${PORT}`);
         });
     });
+
+startMqttService();

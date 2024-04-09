@@ -16,6 +16,13 @@ import { startMqttServer } from './services/mqttServer';
 
 import { tcpServer, tcpClients } from './services/tcpServer';
 
+import { createGenericPayload } from './services/payloadService';
+import { GenericPayload } from './models/Payload';
+
+// Example usage
+
+
+
 // Example: Access tcpClients map
 console.log('Current TCP clients:');
 for (const clientId of tcpClients.keys()) {
@@ -59,7 +66,12 @@ connectToMongoDB()
     });
 
 const { sendMessageToClient } = startMqttServer();
-setTimeout(() => {
-    console.log("Sending data...")
-    sendMessageToClient({ data: "hi client" })
+setInterval(() => {
+    const clientId = 'clientId';
+    const action = 'PlayAd';
+    const data = { key: 'value' };
+
+    const payload: GenericPayload = createGenericPayload(clientId, action, data);
+    console.log("Sending data...", payload)
+    sendMessageToClient(payload)
 }, 5000)

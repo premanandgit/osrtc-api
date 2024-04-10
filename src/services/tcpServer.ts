@@ -18,11 +18,22 @@ const tcpServer = net.createServer((socket: net.Socket) => {
     tcpClients.delete(clientId);
     console.log(`TCP/IP client disconnected: ${clientId}`);
   });
+
+  socket.on('error', (err) => {
+    console.error('MQTT Client error:', err);
+    // Handle the error as needed (e.g., reconnect, log, etc.)
+  });
+
+  socket.on('close', () => {
+    console.log('MQTT Client closed');
+    // Handle client close event if necessary
+  });
+
 });
 
 // Start listening on port 3001
 tcpServer.listen(3001, () => {
-  console.log('TCP/IP server listening on port 3000');
+  console.log('TCP/IP server listening on port 3001');
 });
 
 export { tcpServer, tcpClients };

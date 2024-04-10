@@ -45,6 +45,23 @@ app.use('/api/users', userRoutes);
 app.use('/api/depots', depotRoutes);
 app.use('/api/buses', busRoutes);
 
+app.post('/api/mqtt', (req, res) => {
+    try {
+        // Call the function to send data to the TCP server
+        const clientId = 'clientIdReact';
+        const action = 'PlayAd';
+        const data = { key: 'value' };
+        const payload: GenericPayload = createGenericPayload(clientId, action, data);
+        console.log("Sending data from api...", payload)
+        sendMessageToClient(payload)
+
+        res.status(200).json({ success: true, message: 'Data sent to TCP server' });
+    } catch (error) {
+        console.error('Error sending data:', error);
+        res.status(500).json({ success: false, message: 'Failed to send data' });
+    }
+});
+
 app.use(errorHandler);
 
 initWebSocket(server);
@@ -66,12 +83,12 @@ connectToMongoDB()
     });
 
 const { sendMessageToClient } = startMqttServer();
-setInterval(() => {
-    const clientId = 'clientId';
-    const action = 'PlayAd';
-    const data = { key: 'value' };
+// setInterval(() => {
+//     const clientId = 'clientId';
+//     const action = 'PlayAd';
+//     const data = { key: 'value' };
 
-    const payload: GenericPayload = createGenericPayload(clientId, action, data);
-    console.log("Sending data...", payload)
-    sendMessageToClient(payload)
-}, 5000)
+//     const payload: GenericPayload = createGenericPayload(clientId, action, data);
+//     console.log("Sending data...", payload)
+//     sendMessageToClient(payload)
+// }, 5000)

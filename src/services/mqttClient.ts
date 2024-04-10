@@ -28,6 +28,14 @@ client.on('message', (topic, message) => {
   }
 });
 
+client.on('close', () => {
+  console.log('Connection to mqtt client closed');
+});
+
+client.on('error', (err: Error) => {
+  console.error('Error in mqtt connection:', err);
+});
+
 export const sendMessageToServer = (payload: any) => {
   client.publish(TOPIC_TO_SERVER, JSON.stringify(payload));
 };

@@ -33,6 +33,16 @@ export const startMqttServer = () => {
     }
   });
 
+  client.on('error', (err) => {
+    console.error('MQTT Client error:', err);
+    // Handle the error as needed (e.g., reconnect, log, etc.)
+  });
+
+  client.on('close', () => {
+    console.log('MQTT Client closed');
+    // Handle client close event if necessary
+  });
+
   const sendMessageToClient = (payload: any) => {
     client.publish(TOPIC_TO_CLIENT, JSON.stringify(payload));
   };

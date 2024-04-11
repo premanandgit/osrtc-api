@@ -1,6 +1,7 @@
 import * as mqtt from 'mqtt';
 
-const MQTT_BROKER_URL = 'mqtt://test.mosquitto.org'; // Change this to your MQTT broker URL
+// const MQTT_BROKER_URL = 'mqtt://test.mosquitto.org'; // Change this to your MQTT broker URL
+const MQTT_BROKER_URL = 'mqtt://0.0.0.0:1883'; // Own mosquitto docker container mosquitto config allow_anonymous true listener 1883 0.0.0.0
 const TOPIC_TO_SERVER = 'topic/fromClientToServer';
 const TOPIC_TO_CLIENT = 'topic/fromServerToClient';
 

@@ -14,7 +14,7 @@ import { initWebSocket } from './services/socketModule';
 import connectToMongoDB from './services/db';
 import { startMqttServer } from './services/mqttServer';
 
-import { tcpServer, tcpClients, sendToTCPClient } from './services/tcpServer';
+import { sendToTCPClient } from './services/tcpServer';
 
 import { createGenericPayload } from './services/payloadService';
 import { GenericPayload } from './models/Payload';
@@ -23,11 +23,6 @@ import { GenericPayload } from './models/Payload';
 
 
 
-// Example: Access tcpClients map
-console.log('Current TCP clients:');
-for (const clientId of tcpClients.keys()) {
-    console.log(`Client ID: ${clientId}`);
-}
 
 
 const app = express();
@@ -65,7 +60,7 @@ app.post('/api/mqtt', (req, res) => {
 app.post('/api/tcp', (req, res) => {
     try {
         // Call the function to send data to the TCP server
-        const clientId = 'clientIdReact';
+        const clientId = 'myId';
         const action = 'PlayAd';
         const data = { key: 'value' };
         const payload: GenericPayload = createGenericPayload(clientId, action, data);

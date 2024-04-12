@@ -1,15 +1,22 @@
 import net from 'net';
+import { GenericPayload } from '../models/Payload';
+import { createGenericPayload } from './payloadService';
 
 const serverAddress = '192.168.1.42'; // Replace with your server's local IP address
 const serverPort = 3001;
 
 const client = new net.Socket();
+const clientId = "myId"
 
 client.connect(serverPort, serverAddress, () => {
   console.log('Connected to TCP/IP server');
 
+  const action = 'Client PlayAd';
+  const data = { key: 'value' };
+  const payload: GenericPayload = createGenericPayload(clientId, action, data);
+
   // Send data to the server
-  client.write('Hello from Raspberry Pi client!');
+  client.write(JSON.stringify(payload));
 });
 
 client.on('data', (data: Buffer) => {

@@ -36,4 +36,15 @@ tcpServer.listen(3001, () => {
   console.log('TCP/IP server listening on port 3001');
 });
 
-export { tcpServer, tcpClients };
+const sendToTCPClient = (clientId: string, message: any) => {
+  const firstClientId = tcpClients.keys().next().value;
+  const socket = tcpClients.get(firstClientId);
+  if (socket) {
+    socket.write(JSON.stringify(message));
+    console.log(`Sent message to client ${firstClientId}: ${JSON.stringify(message)}`);
+  } else {
+    console.error(`Client ${firstClientId} not found`);
+  }
+}
+
+export { tcpServer, tcpClients, sendToTCPClient };

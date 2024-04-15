@@ -26,10 +26,7 @@ export const startMqttServer = () => {
     if (topic === TOPIC_TO_SERVER) {
       const parsedMessage = JSON.parse(message.toString());
       console.log('Message from client:', parsedMessage);
-      // Process the message from the client as needed
-      // Example: Prepare a response message
       const responsePayload = { response: 'Acknowledged', data: parsedMessage };
-      // Send the response back to the client
       client.publish(TOPIC_TO_CLIENT, JSON.stringify(responsePayload));
     }
   });

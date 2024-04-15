@@ -22,7 +22,6 @@ client.on('connect', () => {
 client.on('message', (topic, message) => {
   console.log('Received message from topic:', topic.toString());
 
-  // Handle incoming messages based on the topic
   if (topic === TOPIC_TO_CLIENT) {
     const parsedMessage = JSON.parse(message.toString());
     console.log('Message from server:', parsedMessage);

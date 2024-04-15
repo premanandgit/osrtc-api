@@ -14,14 +14,11 @@ client.connect(serverPort, serverAddress, () => {
   const action = 'Client PlayAd';
   const data = { key: 'value' };
   const payload: GenericPayload = createGenericPayload(clientId, action, data);
-
-  // Send data to the server
   client.write(JSON.stringify(payload));
 });
 
 client.on('data', (data: Buffer) => {
   console.log(`Received data from server: ${data.toString()}`);
-  // Process data received from the server
 });
 
 client.on('close', () => {
@@ -30,7 +27,7 @@ client.on('close', () => {
     client.connect(serverPort, serverAddress, () => {
       console.log('Reconnected to TCP/IP server');
     });
-  }, 5000); // Reconnect after 5 seconds
+  }, 5000);
 });
 
 client.on('error', (err: Error) => {

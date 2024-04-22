@@ -62,7 +62,7 @@ app.post('/api/tcp', (req, res) => {
         // Call the function to send data to the TCP server
         const clientId = 'myId';
         const action = 'PlayAd';
-        const data = { key: 'value' };
+        const data = { key: 'value', data: req.body };
         const payload: GenericPayload = createGenericPayload(clientId, action, data);
         console.log("Sending tcp data from api...", payload)
         sendToTCPClient(clientId, payload)
